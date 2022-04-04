@@ -80,15 +80,15 @@ namespace Recruitment.Controllers
         [HttpPut("{id}")] 
         public ActionResult UpdateProduct(UpdateProductDto dto,Guid id)
         {
-            var product = _productRepository.GetProduct(id);
-            if (product == null)
-            {
-                return NotFound($"Not found product with id:{id}");
-            }
             var result = _validatorUpdate.Validate(dto);
             if (!result.IsValid)
             {
                 return BadRequest(result);
+            }
+            var product = _productRepository.GetProduct(id);
+            if (product == null)
+            {
+                return NotFound($"Not found product with id:{id}");
             }
             _productRepository.UpdateProduct(id, dto.Description, dto.Quantity);
             return Ok();
