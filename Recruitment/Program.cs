@@ -18,6 +18,7 @@ builder.Services.AddDbContext<RecruitmentDbContext>(opt => opt.UseSqlServer(buil
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IValidator<AddProductDto>, AddProductDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductDtoValidator>();
+builder.Services.AddScoped<IAddValidation, AddValidation>();
 
 var app = builder.Build();
 

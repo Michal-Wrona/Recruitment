@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Recruitment.Api;
 using Recruitment.Core.Products;
+using Recruitment.Core.Validation;
 
 namespace Recruitment.Controllers
 {
@@ -14,7 +15,8 @@ namespace Recruitment.Controllers
         private readonly IValidator<AddProductDto> _validatorAdd;
         private readonly IValidator<UpdateProductDto> _validatorUpdate;
 
-        public ProductController(IProductRepository productRepository, IValidator<AddProductDto> validatorAdd, IValidator<UpdateProductDto> validatorUpdate)
+
+        public ProductController(IProductRepository productRepository, IValidator<AddProductDto> validatorAdd, IValidator<UpdateProductDto> validatorUpdate, IAddValidation validation)
         {
             _productRepository = productRepository;
             _validatorAdd = validatorAdd;
@@ -66,12 +68,28 @@ namespace Recruitment.Controllers
         [HttpPost]
         public ActionResult AddProduct(AddProductDto dto)
         {
-            var result = _validatorAdd.Validate(dto);
-            if (!result.IsValid)
+            AddValidation validation = new AddValidation();
+            var a=validation.NameProductIsNull(dto);
+            if (a == false)
             {
-                return BadRequest(result);
+                return BadRequest("No product name");
             }
-            
+            var b = validation.NameProductLengthTooLong(dto);
+            if (b == false)
+            {
+                return BadRequest("Product name is too long");
+            }
+            var c = validation.PriceProductIsNull(dto);
+            if (c == false)
+            {
+                return BadRequest("No price");
+            }
+            //var result = _validatorAdd.Validate(dto);
+            //if (!result.IsValid)
+            //{
+            //    return BadRequest(result);
+            //}
+
             var product = new Product { Description = dto.Description, Name = dto.Name, Number = dto.Number, Price = dto.Price, Quantity = dto.Quantity };
             _productRepository.AddProduct(product);
             return Ok(product.Id);
